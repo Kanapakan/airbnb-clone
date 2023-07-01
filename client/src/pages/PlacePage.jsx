@@ -30,12 +30,6 @@ function PlacePage() {
       />
     );
   }
-  //   if (showMore) {
-  //     console.log("show");
-  //     return (
-
-  //     );
-  //   }
 
   return (
     <div className="py-8 bg-gray-100 mt-4 -mx-[2rem] sm:-mx-[2rem] xl:-mx-20  px-20 md:px-24 lg:px-28 xl:px-44">
@@ -138,7 +132,7 @@ function PlacePage() {
                         About this space
                       </h1>
                       <p className="mt-4 pr-8 text-black text-md leading-relaxed font-light">
-					  	{place.description}
+                        {place.description}
                       </p>
                     </div>
                   </div>

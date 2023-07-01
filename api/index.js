@@ -38,6 +38,7 @@ app.post("/register", async (req, res) => {
       name,
       email,
       password: bcrypt.hashSync(password, bcryptSalt),
+      savePlaces: []
     });
     res.json(userDoc);
   } catch (e) {
@@ -73,8 +74,8 @@ app.get("/profile", (req, res) => {
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, {}, async (err, userData) => {
       if (err) throw err;
-      const { email, name, _id } = await User.findById(userData.id);
-      res.json({ email, name, _id });
+      const { email, name, _id, savePlaces } = await User.findById(userData.id);
+      res.json({ email, name, _id, savePlaces });
     });
   } else {
     res.json(null);
@@ -196,6 +197,25 @@ app.put("/places", async (req, res) => {
 
 app.get('/places', async (req, res) => {
   res.json(await Place.find());
+})
+
+app.put('/bookmark', async (req, res) => {
+  const { token } = req.cookies;
+  const {
+    savedPlaceAll
+  } = req.body;
+  jwt.verify(token, process.env.JWT_SECRET, {}, async (err, userData) => {
+    const userDoc = await User.findById(userData.id);
+    if (userDoc) {
+      // res.json(savedPlaceAll)
+      userDoc.set({
+        savePlaces: savedPlaceAll
+      });
+      await userDoc.save();
+      res.json("ok");
+    } 
+  });
+
 })
 
 
