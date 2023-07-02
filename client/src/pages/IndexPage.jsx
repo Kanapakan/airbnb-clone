@@ -7,8 +7,9 @@ import { UserContext } from "../userContext";
 function IndexPage() {
   const { ready, user } = useContext(UserContext);
   const [places, setPlaces] = useState([]);
-  const [save, setSave] = useState(false);
   const [savedPlace, setSavedPlace] = useState([]);
+  const [alertSave, setAlertSave] = useState(false);
+  const [isSave, setIsSave] = useState(false);
 
   useEffect(() => {
     axios.get("/places").then((response) => {
@@ -21,24 +22,50 @@ function IndexPage() {
   }, []);
 
   async function savePlace(id) {
-    let savedPlaceAll = []; 
-    let indetPlace = savedPlace.indexOf(id);
-    if (indetPlace >= 0) {
-      savedPlaceAll = [...savedPlace]
-      savedPlaceAll.splice(indetPlace, 1);
+    setAlertSave(true);
+    let savedPlaceAll = [];
+    let indexPlace = savedPlace.indexOf(id);
+    if (indexPlace >= 0) {
+      // unsave
+      savedPlaceAll = [...savedPlace];
+      savedPlaceAll.splice(indexPlace, 1);
+      setIsSave(false);
     } else {
-      savedPlaceAll = [...savedPlace, id]
+      // save
+      savedPlaceAll = [...savedPlace, id];
+      setIsSave(true);
     }
-    console.log(savedPlaceAll);
+    // alertBookmark(isSave)
     setSavedPlace(savedPlaceAll);
     await axios.put("/bookmark", { savedPlaceAll });
+    // console.log(isSave);
+    // setTimeout(() => {
+    //   setAlertSave(false);
+    // }, 2000);
+  }
+
+  function alertBookmark(id, isSave) {
+    if (isSave) {
+      console.log("save" + id);
+
+      //   return (<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+      //   <strong class="font-bold">Holy smokes!</strong>
+      //   <span class="block sm:inline">Something seriously bad happened.</span>
+      //   <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+      //     <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+      //   </span>
+      // </div>)
+    } else {
+      // return <Alert>unSave{id}</Alert>
+      console.log("unsave" + id);
+    }
   }
 
   return (
     <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-8">
       {places.length > 0 &&
         places.map((place) => (
-          <div className="relative">
+          <div className="relative" key={place._id}>
             <button
               className="absolute bg-transparent right-0 p-2 cursor-pointer"
               onClick={() => savePlace(place._id)}
@@ -99,6 +126,33 @@ function IndexPage() {
                 <span className="font-semibold">${place.price}</span> per night
               </div>
             </Link>
+            <div
+              onTransitionEnd={() => setAlertSave(false)}
+              className={`p-8 left-0 bottom-1 fixed z-[999] ${
+                alertSave ? "alert-shown " : "alert-hidden"
+              } `}
+            >
+              <div
+                className="grid grid-flow-row bg-white text-black border border-gray-300 shadow-lg rounded-2xl py-2 px-3"
+                role="alert"
+              >
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 shrink-0">
+                    <img
+                      className="rounded-lg object-cover aspect-square"
+                      src={"http://localhost:4000/uploads/" + place.photos?.[0]}
+                      alt=""
+                    />
+                  </div>
+                  <div className="self-center w-52">
+
+                  <p className="text-sm">
+                    {`${isSave ? "Saved to Bookmark" : "Removed to Bookmark"}`}
+                  </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         ))}
     </div>

@@ -17,3 +17,13 @@ button.primary {
   background-color: #F53850;
   @apply bg-primary p-2 w-full text-white rounded-2xl;
 }
+
+.alert-shown {
+  opacity: 1;
+  transition: all 250ms ease-in;
+}
+
+.alert-hidden {
+  opacity: 0;
+  transition: all 250ms ease-out 5s; 
+}

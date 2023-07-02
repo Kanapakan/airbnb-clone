@@ -9,7 +9,7 @@ export default function PlacePhotosModal({ showAllPhotos, onChange, item }) {
           
           <div className="gap-4 grid p-8">
             <div>
-              <button className="bg-white fixed flex" onClick={() => onChange(false)}>
+              <button className="bg-white fixed flex z-50" onClick={() => onChange(false)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
