@@ -4,9 +4,11 @@ import Header from "./components/Header";
 
 function Layout() {
   return (
-    <div className="py-4 px-8 md:px-10 lg:px-20 flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <Outlet />
+      <div className="px-8 md:px-10 lg:px-20">
+        <Outlet />
+      </div>
     </div>
   );
 }
