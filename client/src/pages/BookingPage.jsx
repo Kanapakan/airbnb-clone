@@ -1,8 +1,10 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { WindowContext } from '../windowContext';
 
 export default function BookingPage() {
+	const { clientHeight, clientWidth } = useContext(WindowContext);
   const {id} = useParams();
 	const [booking, setBooking] = useState(null);
 
@@ -21,7 +23,7 @@ export default function BookingPage() {
 	
   return (
     <div>
-      {/* {booking.place?.length } */}
+      
     </div>
   )
 }
