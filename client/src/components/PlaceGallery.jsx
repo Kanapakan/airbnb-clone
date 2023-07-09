@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PlaceImg from './PlaceImg';
 import PlacePhotosModal from './PlacePhotosModal';
+import { WindowContext } from '../windowContext';
 
-export default function PlaceGallery({place, windowWidth}) {
+export default function PlaceGallery({place}) {
+  const { clientHeight, clientWidth } = useContext(WindowContext);
 	const [showAllPhotos, setShowAllPhotos] = useState(false);
 
 	if (showAllPhotos) {
@@ -27,7 +29,7 @@ export default function PlaceGallery({place, windowWidth}) {
               )}
             </div>
           </div>
-          {windowWidth >= 768 && (
+          {clientWidth >= 768 && (
             <div className="grid">
               {place.photos?.[1] && (
                 <div onClick={() => setShowAllPhotos(true)}>

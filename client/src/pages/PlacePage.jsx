@@ -1,28 +1,16 @@
 import axios from "axios";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import PlacePhotosModal from "../components/PlacePhotosModal";
 import ReserveWidget from "../components/ReserveWidget";
-import PlaceImg from "../components/PlaceImg";
 import PlaceGallery from "../components/PlaceGallery";
+import AddressLink from "../components/AddressLink";
+import { WindowContext } from "../windowContext";
 
 function PlacePage() {
+  const { clientHeight, clientWidth } = useContext(WindowContext);
   const { id } = useParams();
   const [place, setPlace] = useState(null);
   const [showMore, setShowMore] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleWindowResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener("resize", handleWindowResize);
-
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  });
 
   useEffect(() => {
     if (!id) {
@@ -38,25 +26,23 @@ function PlacePage() {
 
   return (
     <div className="sm:mt-0 mt-4 -mx-[2rem] md:-mx-[3rem] lg:-mx-[5rem] xl:-mx-20 md:px-12 lg:px-28 xl:px-44">
-      {windowWidth >= 768 && (
+      {clientWidth >= 768 && (
         <>
           <h1 className="pt-8 text-2xl">{place.title}</h1>
           <p className="my-2 mb-6">
-            <a
-              className="underline text-sm"
-              target="_blank"
-              href={`https://maps.google.com/?q=${place.address}`}
-            >
-              {place.address}
-            </a>
+           <AddressLink>{place.address}</AddressLink>
           </p>
         </>
       )}
-      <PlaceGallery place={place} windowWidth={windowWidth}/>
+      <PlaceGallery place={place}/>
       <div className="mt-8 my-4 grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-8 sm:px-6 md:px-0">
         <div>
           <h1 className="text-2xl">{place.title}</h1>
-          <p className="font-light mt-2">{place.maxGuests} guests</p>
+          <div className="flex gap-2 mt-2 items-center">
+            <p className="font-light">{place.maxGuests} guests</p>
+            <span>&#183;</span>
+            <AddressLink>{place.address}</AddressLink>
+          </div>
           <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-300" />
           <p className="text-md line-clamp-5 font-light">{place.description}</p>
           <div
