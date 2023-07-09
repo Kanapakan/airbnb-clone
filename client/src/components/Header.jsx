@@ -1,23 +1,14 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "../userContext";
+import axios from "axios";
 
 function Header() {
-  const { user } = useContext(UserContext);
+  const { ready, user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
   const [top, setTop] = useState(true);
   const [showDropDown, setShowDropDown] = useState(false);
-  const catMenu = useRef(null);
-
-  const closeOpenMenus = (e) => {
-    if (
-      catMenu.current &&
-      showDropDown &&
-      !catMenu.current.contains(e.target)
-    ) {
-      setShowDropDown(false);
-    }
-  };
-  document.addEventListener("mousedown", closeOpenMenus);
+  const dropDownMenu = useRef(null);
 
   useEffect(() => {
     const scrollHandler = () => {
@@ -26,6 +17,31 @@ function Header() {
     window.addEventListener("scroll", scrollHandler);
     return () => window.removeEventListener("scroll", scrollHandler);
   }, [top]);
+
+  const closeOpenMenus = (e) => {
+    if (
+      dropDownMenu.current &&
+      showDropDown &&
+      !dropDownMenu.current.contains(e.target)
+    ) {
+      setShowDropDown(false);
+    }
+  };
+  document.addEventListener("mousedown", closeOpenMenus);
+
+  async function logout() {
+    await axios.post("/logout");
+    setUser(null);
+    navigate("/");
+  }
+
+  if (!ready) {
+    return "Loading";
+  }
+
+  if (ready && !user && !navigate) {
+    navigate('/login');
+  }
 
   return (
     <div
@@ -74,68 +90,69 @@ function Header() {
             </svg>
           </button>
         </div>
-        <button
-          // to={user ? "/account" : "/login"}
-          onClick={() => setShowDropDown(!showDropDown)}
-          className="flex items-center gap-2 bg-white border border-gray-300 rounded-full py-1 px-2 hover:shadow-md"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-5 h-5"
+        <div ref={dropDownMenu}>
+          <button
+            // to={user ? "/account" : "/login"}
+            onClick={() => setShowDropDown(!showDropDown)}
+            className="flex items-center gap-2 bg-white border border-gray-300 rounded-full py-1 px-2 hover:shadow-md"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-            />
-          </svg>
-          <div
-            className={`flex border ${
-              !!user ? "bg-black border-black" : "bg-gray-500 border-gray-500"
-            } text-white rounded-full overflow-hidden w-8 h-8`}
-          >
-            {!user && (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="white"
-                className="w-10 h-10 m-auto"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+              />
+            </svg>
+            <div
+              className={`flex border ${
+                !!user ? "bg-black border-black" : "bg-gray-500 border-gray-500"
+              } text-white rounded-full overflow-hidden w-8 h-8`}
+            >
+              {!user && (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="white"
+                  className="w-10 h-10 m-auto"
+                >
+                  <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+                </svg>
+              )}
+              {!!user && <p className="m-auto text-xs">{user.name[0]}</p>}
+            </div>
+          </button>
+          {showDropDown && (
+            <div className=" right-4 sm:right-8 md:right-12 lg:right-20 top-16 absolute  z-50 w-48 py-2 mt-2 bg-white rounded-lg shadow-xl">
+              <a
+                href="#"
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
               >
-                <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
-              </svg>
-            )}
-            {!!user && <p className="m-auto text-xs">{user.name[0]}</p>}
-          </div>
-        </button>
-        {showDropDown && (
-          <div
-            ref={catMenu}
-            className=" right-4 sm:right-8 md:right-12 lg:right-20 top-16 absolute  z-50 w-48 py-2 mt-2 bg-white rounded-lg shadow-xl"
-          >
-            <a
-              href="#"
-              className="block px-4 py-2 text-gray-800 hover:bg-indigo-500 hover:text-white"
-            >
-              Item 1
-            </a>
-            <a
-              href="#"
-              className="block px-4 py-2 text-gray-800 hover:bg-indigo-500 hover:text-white"
-            >
-              Item 2
-            </a>
-            <a
-              href="#"
-              className="block px-4 py-2 text-gray-800 hover:bg-indigo-500 hover:text-white"
-            >
-              Item 3
-            </a>
-          </div>
-        )}
+                Wishlist
+              </a>
+              <Link
+                to={"/account"}
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+              >
+                Account
+              </Link>
+              {!!user ? (<p
+                onClick={logout}
+                className="block px-4 py-2 text-gray-800 hover:bg-gray-100 cursor-pointer"
+              >
+                Log out
+              </p>) : (<Link className="block px-4 py-2 text-gray-800 hover:bg-gray-100" to={"/login"}>
+              Login
+            </Link>)}
+            </div>
+          )}
+        </div>
       </header>
     </div>
   );

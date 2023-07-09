@@ -5,10 +5,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const Place = require("./models/Place");
+const Reservation = require("./models/Reservation");
 const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
 const multer = require("multer");
 const fs = require("fs");
+const { resolve } = require("path");
 
 require("dotenv").config();
 const app = express();
@@ -27,6 +29,15 @@ app.use(
 
 mongoose.connect(process.env.MONGO_URL);
 
+function getUserDataFromReq(req) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(req.cookies.token, process.env.JWT_SECRET, {}, async (err, userData) => {
+      if (err) throw err;
+      resolve(userData);
+    });
+  });
+}
+
 app.get("/test", (req, res) => {
   res.json("test ok");
 });
@@ -38,7 +49,7 @@ app.post("/register", async (req, res) => {
       name,
       email,
       password: bcrypt.hashSync(password, bcryptSalt),
-      savePlaces: []
+      savePlaces: [],
     });
     res.json(userDoc);
   } catch (e) {
@@ -68,6 +79,7 @@ app.post("/login", async (req, res) => {
     res.json("Not found!");
   }
 });
+
 
 app.get("/profile", (req, res) => {
   const { token } = req.cookies;
@@ -195,29 +207,51 @@ app.put("/places", async (req, res) => {
   });
 });
 
-app.get('/places', async (req, res) => {
+app.get("/places", async (req, res) => {
   res.json(await Place.find());
-})
+});
 
-app.put('/bookmark', async (req, res) => {
+app.put("/bookmark", async (req, res) => {
   const { token } = req.cookies;
-  const {
-    savedPlaceAll
-  } = req.body;
+  const { savedPlaceAll } = req.body;
   jwt.verify(token, process.env.JWT_SECRET, {}, async (err, userData) => {
     const userDoc = await User.findById(userData.id);
     if (userDoc) {
       // res.json(savedPlaceAll)
       userDoc.set({
-        savePlaces: savedPlaceAll
+        savePlaces: savedPlaceAll,
       });
       await userDoc.save();
       res.json("ok");
-    } 
+    }
   });
+});
 
+app.post("/bookings", async (req, res) => {
+  const userData = await getUserDataFromReq(req);
+  const { place, checkIn, checkOut, numberOfGuest, name, phone, price } =
+    req.body;
+  Reservation.create({
+    place,
+    checkIn,
+    checkOut,
+    numberOfGuest,
+    name,
+    phone,
+    price,
+    user: userData.id
+  })
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      throw err;
+    });
+});
+
+app.get("/bookings", async (req, res) => {
+  const userData = await getUserDataFromReq(req);
+   res.json(await Reservation.find({user: userData.id}).populate('place'))
 })
-
-
 
 app.listen(4000);

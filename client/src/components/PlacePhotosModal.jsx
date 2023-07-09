@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function PlacePhotosModal({ showAllPhotos, onChange, item }) {
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   return (
     <>
       {showAllPhotos ? (
-        <div className="absolute inset-0 bg-white min-h-screen">
+        <div className="absolute inset-0 bg-white h-fit z-[99]">
           {/*content*/}
           
           <div className="gap-4 grid p-8">
             <div>
-              <button className="bg-white fixed flex z-50" onClick={() => onChange(false)}>
+              <button className="bg-white fixed flex z-[999]" onClick={() => onChange(false)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
@@ -28,7 +31,7 @@ export default function PlacePhotosModal({ showAllPhotos, onChange, item }) {
             {/*body*/}
             {item?.photos?.length > 0 &&
               item.photos.map((photo) => (
-                <div className="flex h-96 relative justify-self-center">
+                <div key={photo} className="flex h-96 relative justify-self-center">
                   <img
                     className="aspect-[6/3] object-cover px-20"
                     src={`http://localhost:4000/uploads/${photo}`}

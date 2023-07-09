@@ -1,13 +1,28 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import PlacePhotosModal from "../components/PlacePhotosModal";
+import ReserveWidget from "../components/ReserveWidget";
+import PlaceImg from "../components/PlaceImg";
+import PlaceGallery from "../components/PlaceGallery";
 
 function PlacePage() {
   const { id } = useParams();
   const [place, setPlace] = useState(null);
-  const [showAllPhotos, setShowAllPhotos] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  });
 
   useEffect(() => {
     if (!id) {
@@ -19,98 +34,42 @@ function PlacePage() {
   }, [id]);
 
   if (!place) return "";
-  // console.log(place.photos.length);
 
-  if (showAllPhotos) {
-    return (
-      <PlacePhotosModal
-        showAllPhotos={showAllPhotos}
-        onChange={setShowAllPhotos}
-        item={place}
-      />
-    );
-  }
 
   return (
-    <div className="py-8 bg-gray-100 mt-4 -mx-[2rem] sm:-mx-[2rem] xl:-mx-20  px-20 md:px-24 lg:px-28 xl:px-44">
-      <h1 className="text-2xl">{place.title}</h1>
-      <a
-        className="block my-2 underline text-sm"
-        target="_blank"
-        href={`https://maps.google.com/?q=${place.address}`}
-      >
-        {place.address}
-      </a>
-      <div className="mt-6 relative">
-        <div className="grid grid-cols-[2fr_1fr] gap-2 rounded-xl overflow-hidden">
-          <div className="grid">
-            <div className="flex">
-              {place.photos?.[0] && (
-                <img
-                  className="aspect-[5/3] object-cover"
-                  src={`http://localhost:4000/uploads/${place.photos?.[0]}`}
-                  alt=""
-                />
-              )}
-            </div>
-          </div>
-          <div className="grid">
-            {place.photos?.[1] && (
-              <img
-                className="aspect-[5/3] object-cover"
-                src={`http://localhost:4000/uploads/${place.photos?.[1]}`}
-                alt=""
-              />
-            )}
-            <div className="overflow-hidden">
-              {place.photos?.[2] && (
-                <img
-                  className="aspect-[5/3] object-cover relative top-2"
-                  src={`http://localhost:4000/uploads/${place.photos?.[2]}`}
-                  alt=""
-                />
-              )}
-            </div>
-          </div>
-        </div>
-        <button
-          onClick={() => setShowAllPhotos(true)}
-          className="flex gap-1 absolute bottom-3 right-3 py-1 px-3 bg-white rounded-lg border border-black cursor-pointer hover:bg-gray-100"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          Show more
-        </button>
-      </div>
-      <div className="my-4 grid grid-cols-[2fr_1fr] gap-14">
-        <div className="mt-5">
+    <div className="sm:mt-0 mt-4 -mx-[2rem] md:-mx-[3rem] lg:-mx-[5rem] xl:-mx-20 md:px-12 lg:px-28 xl:px-44">
+      {windowWidth >= 768 && (
+        <>
+          <h1 className="pt-8 text-2xl">{place.title}</h1>
+          <p className="my-2 mb-6">
+            <a
+              className="underline text-sm"
+              target="_blank"
+              href={`https://maps.google.com/?q=${place.address}`}
+            >
+              {place.address}
+            </a>
+          </p>
+        </>
+      )}
+      <PlaceGallery place={place} windowWidth={windowWidth}/>
+      <div className="mt-8 my-4 grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-8 sm:px-6 md:px-0">
+        <div>
           <h1 className="text-2xl">{place.title}</h1>
-          <p className="font-light mt-4">{place.maxGuests} guests</p>
+          <p className="font-light mt-2">{place.maxGuests} guests</p>
           <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-300" />
-          <p className="text-md line-clamp-3 font-light">{place.description}</p>
+          <p className="text-md line-clamp-5 font-light">{place.description}</p>
           <div
-            className="flex gap-1 cursor-pointer"
+            className="flex gap-1 cursor-pointer w-fit"
             onClick={() => setShowMore(true)}
           >
-            <h3 className="my-3 underline">Show more </h3>
-            <h2 className="self-center text-lg ">{">"}</h2>
+            <p className="my-3 underline">Show more </p>
+            <p className="self-center text-lg ">{">"}</p>
           </div>
         </div>
         {showMore ? (
           <>
-            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+            <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-[90] outline-none focus:outline-none">
               <div className="relative w-auto my-6 mx-auto xl:max-w-3xl max-w-3xl max-h-3xl">
                 {/*content*/}
                 <div className="h-[600px] max-w-3xl border-0 rounded-lg shadow-[0_0px_40px_5px_rgba(0,0,0,0.3)] relative flex flex-col bg-white outline-none focus:outline-none">
@@ -142,7 +101,16 @@ function PlacePage() {
             <div className="opacity-40 fixed inset-0 z-40 bg-black"></div>
           </>
         ) : null}
-        <div>b</div>
+        <div>
+          <ReserveWidget place={place} />
+        </div>
+      </div>
+      <hr className="sm:px-6 md:px-0 h-px mt-10 bg-gray-200 border-0 dark:bg-gray-300" />
+      <div className="sm:px-6 md:px-0 py-8">
+          <div>
+            <h2 className="text-xl font-semibold">Extra info</h2>
+          </div>
+          <div className="mb-4 mt-2  text-sm text-gray-700 leading-5">{place.extraInfo}</div>
       </div>
     </div>
   );
