@@ -260,5 +260,3 @@ app.get("/bookings", async (req, res) => {
 
 app.listen(4000);
 
-// Export the Express API
-module.exports = app;
