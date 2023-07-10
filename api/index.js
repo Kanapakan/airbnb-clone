@@ -258,5 +258,8 @@ app.get("/bookings", async (req, res) => {
   res.json(await Reservation.find({ user: userData.id }).populate("place"));
 });
 
-app.listen(4000);
-
+app.listen(4000, () => {
+  console.log("Running on port 4000.");
+});
+// Export the Express API
+module.exports = app;
