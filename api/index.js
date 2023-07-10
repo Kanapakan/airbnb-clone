@@ -31,10 +31,15 @@ mongoose.connect(process.env.MONGO_URL);
 
 function getUserDataFromReq(req) {
   return new Promise((resolve, reject) => {
-    jwt.verify(req.cookies.token, process.env.JWT_SECRET, {}, async (err, userData) => {
-      if (err) throw err;
-      resolve(userData);
-    });
+    jwt.verify(
+      req.cookies.token,
+      process.env.JWT_SECRET,
+      {},
+      async (err, userData) => {
+        if (err) throw err;
+        resolve(userData);
+      }
+    );
   });
 }
 
@@ -79,7 +84,6 @@ app.post("/login", async (req, res) => {
     res.json("Not found!");
   }
 });
-
 
 app.get("/profile", (req, res) => {
   const { token } = req.cookies;
@@ -239,7 +243,7 @@ app.post("/bookings", async (req, res) => {
     name,
     phone,
     price,
-    user: userData.id
+    user: userData.id,
   })
     .then((doc) => {
       res.json(doc);
@@ -251,7 +255,10 @@ app.post("/bookings", async (req, res) => {
 
 app.get("/bookings", async (req, res) => {
   const userData = await getUserDataFromReq(req);
-   res.json(await Reservation.find({user: userData.id}).populate('place'))
-})
+  res.json(await Reservation.find({ user: userData.id }).populate("place"));
+});
 
 app.listen(4000);
+
+// Export the Express API
+module.exports = app;
