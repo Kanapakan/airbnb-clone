@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const Place = require("./models/Place");
 const Reservation = require("./models/Reservation");
+const WishList = require("./models/WishList");
 const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
 const multer = require("multer");
@@ -211,20 +212,46 @@ app.get("/places", async (req, res) => {
   res.json(await Place.find());
 });
 
-app.put("/bookmark", async (req, res) => {
-  const { token } = req.cookies;
-  const { savedPlaceAll } = req.body;
-  jwt.verify(token, process.env.JWT_SECRET, {}, async (err, userData) => {
-    const userDoc = await User.findById(userData.id);
-    if (userDoc) {
-      // res.json(savedPlaceAll)
-      userDoc.set({
-        savePlaces: savedPlaceAll,
-      });
-      await userDoc.save();
-      res.json("ok");
-    }
-  });
+app.get("/bookmarks", async (req, res) => {
+  const userData = await getUserDataFromReq(req);
+  if (WishList.findOne({user: userData.id})) {
+    res.json(await WishList.findOne({user: userData.id}));
+  } else {
+    res.json(null);
+  }
+});
+
+app.post("/bookmarks", async (req, res) => {
+  const userData = await getUserDataFromReq(req);
+  const { boardName, boardPlace } = req.body;
+  WishList.create({
+    user: userData.id,
+    board: board
+  })
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      throw err;
+    });
+})
+app.put("/bookmarks", async (req, res) => {
+  const userData = await getUserDataFromReq(req);
+  const { boardName, boardPlace } = req.body;
+  const wishListDoc = await WishList.findById(userData.id).find({board: {$elemMatch: {name: boardName}}});
+  console.log(wishListDoc);
+  // const boardDoc = await WishList.findOne(userData.id);
+  // if (wishListDoc) {
+    // res.json(savedPlaceAll)
+      // wishListDoc.set({
+      //   place : boardPlace
+      // });
+      // await wishListDoc.save();
+      // res.json(boardPlace);
+//       await wishListDoc.save();
+      res.json(wishListDoc);
+    // }
+
 });
 
 app.post("/bookings", async (req, res) => {
