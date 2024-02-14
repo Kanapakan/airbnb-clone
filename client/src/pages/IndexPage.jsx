@@ -8,7 +8,10 @@ function IndexPage() {
   const navigate = useNavigate();
   const { ready, user } = useContext(UserContext);
   const [places, setPlaces] = useState([]);
-  const [savedPlace, setSavedPlace] = useState([]);
+  const [boardList, setBoardList] = useState([]);
+  const [boardName, setBoardName] = useState("");
+  const [boardPlace, setboardPlace] = useState([]);
+  const [allboardPlace, setAllBoardPlace] = useState([]);
   const [alertSave, setAlertSave] = useState(false);
   const [isSave, setIsSave] = useState(false);
 
@@ -16,12 +19,29 @@ function IndexPage() {
     axios.get("/places").then((response) => {
       setPlaces(response.data);
     });
-
     if (user) {
-      axios.get("/profile").then(({ data }) => {
-        setSavedPlace(data.savePlaces);
+      axios.get("/bookmarks").then((res) => {
+        if (res.data) {
+          setBoardList(res.data.board);
+          let placeList = [];
+          res.data.board.forEach((item) => {
+            item.place.forEach((place) => {
+              placeList.push(place);
+            });
+          });
+          setAllBoardPlace(placeList);
+          console.log(placeList);
+        } else {
+          setBoardList(null);
+        }
       });
-    } else setSavedPlace(null);
+    } else setBoardList(null);
+
+    // if (user) {
+    //   axios.get("/profile").then(({ data }) => {
+    //     setWishList(data.wishList);
+    //   });
+    // } else setWishList(null);
   }, [user]);
 
   if (!ready) {
@@ -29,24 +49,48 @@ function IndexPage() {
   }
 
   async function savePlace(id) {
+    const tempBoardName = "new board";
     if (!user) {
       navigate("/login");
     } else {
-      setAlertSave(true);
-      let savedPlaceAll = [];
-      let indexPlace = savedPlace.indexOf(id);
-      if (indexPlace >= 0) {
-        // unsave
-        savedPlaceAll = [...savedPlace];
-        savedPlaceAll.splice(indexPlace, 1);
-        setIsSave(false);
+      const foundBoard = boardList.find((obj) => obj.name === tempBoardName);
+      if (foundBoard) {
+        setboardPlace(foundBoard.place);
+        let newBoard = [];
+        let indexPlace = foundBoard.place.indexOf(id);
+        if (indexPlace >= 0) {
+          // unsave
+          console.log('unsave');
+          newBoard = [...boardPlace];
+          newBoard.splice(indexPlace, 1);
+          setIsSave(false);
+        } else {
+          console.log('save');
+          // save
+          newBoard = [...boardPlace, id];
+          setIsSave(true);
+        }
+        setboardPlace(newBoard);
+        // console.log("axios.put ", { tempBoardName, newBoard });
+        await axios.put("/bookmarks", {boardName: tempBoardName, boardPlace: newBoard });
+        //found board with name
+        // if (boardList) {
+        //   //update
+        //   // await axios.put("/bookmark", {
+        //   //   boardName,
+        //   //   ...boardPlace
+        //   // });
+        // } else {
+        //   // new Wishish
+        //   axios.post("/bookmark", board);
+        // }
       } else {
-        // save
-        savedPlaceAll = [...savedPlace, id];
-        setIsSave(true);
+        // axios.post('/bookmark')
+        console.log("not found");
       }
-      setSavedPlace(savedPlaceAll);
-      await axios.put("/bookmark", { savedPlaceAll });
+
+      // } else {
+      //   setAlertSave(true);
     }
   }
 
@@ -59,7 +103,7 @@ function IndexPage() {
               className="absolute bg-transparent right-0 p-2 cursor-pointer"
               onClick={() => savePlace(place._id)}
             >
-              {savedPlace && savedPlace.indexOf(place._id) >= 0 ? (
+              {allboardPlace && allboardPlace.indexOf(place._id) >= 0 ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
