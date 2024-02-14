@@ -14,7 +14,7 @@ import BookingsPage from "./pages/BookingsPage";
 import BookingPage from "./pages/BookingPage";
 import WindowContextProvider from "./windowContext";
 
-axios.defaults.baseURL = "https://airbnb-clone-lilac-delta.vercel.app/";
+axios.defaults.baseURL = "http://localhost:4000";
 axios.defaults.withCredentials = true;
 
 function App() {
