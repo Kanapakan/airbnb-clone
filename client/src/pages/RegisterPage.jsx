@@ -29,7 +29,7 @@ function RegisterPage() {
         <form className="max-w-md mx-auto" onSubmit={registerUser} >
           <input
             type="text"
-            placeholder="Kapi"
+            placeholder="Username"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />

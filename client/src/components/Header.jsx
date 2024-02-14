@@ -18,7 +18,7 @@ function Header() {
     return () => window.removeEventListener("scroll", scrollHandler);
   }, [top]);
 
-  const closeOpenMenus = (e) => {
+  const closeOpenMenu = (e) => {
     if (
       dropDownMenu.current &&
       showDropDown &&
@@ -27,7 +27,7 @@ function Header() {
       setShowDropDown(false);
     }
   };
-  document.addEventListener("mousedown", closeOpenMenus);
+  document.addEventListener("mousedown", closeOpenMenu);
 
   async function logout() {
     await axios.post("/logout");
@@ -92,7 +92,6 @@ function Header() {
         </div>
         <div ref={dropDownMenu}>
           <button
-            // to={user ? "/account" : "/login"}
             onClick={() => setShowDropDown(!showDropDown)}
             className="flex items-center gap-2 bg-white border border-gray-300 rounded-full py-1 px-2 hover:shadow-md"
           >
