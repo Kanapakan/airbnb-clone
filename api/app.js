@@ -44,6 +44,10 @@ function getUserDataFromReq(req) {
   });
 }
 
+app.get('/', (req, res) => {
+  res.json({ message: 'Server running' })
+})
+
 app.get("/test", (req, res) => {
   res.json("test ok");
 });
