@@ -24,7 +24,7 @@ export default function PlaceGallery({place}) {
             <div className="flex">
               {place.photos?.[0] && (
                 <div onClick={() => setShowAllPhotos(true)}>
-                  <PlaceImg className={'cursor-pointer aspect-[5/3] object-cover w-[741px] h-auto'} place={place} index={0}/>
+                  <PlaceImg className={'cursor-pointer aspect-[5/3] object-cover h-auto'} place={place} index={0}/>
                 </div>
               )}
             </div>

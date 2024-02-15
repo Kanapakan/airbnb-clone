@@ -10,7 +10,7 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState([]);
   // let numberOfNight = differenceInCalendarDays(new Date(booking.checkOut), new Date(booking.checkIn));
   useEffect(() => {
-    axios.get("/bookings").then((response) => {
+    axios.get("/api/bookings").then((response) => {
       setBookings(response.data);
     });
   }, []);

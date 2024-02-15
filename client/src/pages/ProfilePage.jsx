@@ -8,9 +8,10 @@ import AccountNav from "../components/AccountNav";
 function ProfilePage() {
   const { ready, user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
+  console.log(user);
 
   async function logout() {
-    await axios.post("/logout");
+    await axios.post("/api/logout");
     navigate("/");
     setUser(null);
   }
@@ -25,6 +26,11 @@ function ProfilePage() {
   }
 
   if (ready && !user && !navigate) {
+    return <Navigate to={"/login"} />;
+  }
+
+  if (!user) {
+    alert('You are not logged in. Please log in.');
     return <Navigate to={"/login"} />;
   }
 

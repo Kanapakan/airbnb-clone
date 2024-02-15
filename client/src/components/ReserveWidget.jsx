@@ -30,7 +30,7 @@ export default function ReserveWidget({ place }) {
   }
 
   async function reserveThisPlace() {
-		const response = await axios.post('/bookings', {checkIn, checkOut, numberOfGuest, name, phone,
+		const response = await axios.post('/api/bookings', {checkIn, checkOut, numberOfGuest, name, phone,
 			place: place._id,
 			price: numberOfNight * place.price
 		});
@@ -40,7 +40,7 @@ export default function ReserveWidget({ place }) {
 
   return (
     <div>
-      <div className="bg-white shadow-xl border border-gray-200 p-4 rounded-2xl">
+      <div className="bg-white shadow-xl border border-gray-200 p-4 rounded-2xl min-w-max">
         <div className="text-center flex gap-[0.4rem]">
           <p className="text-lg font-semibold">฿{place.price}</p>
           <p className="font-light self-center">night</p>

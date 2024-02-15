@@ -65,7 +65,7 @@ function PhotosUploader({addedPhotos, onChange}) {
             <div className="h-32 flex relative" key={link}>
               <img
                 className="rounded-2xl w-full object-cover"
-                src={"http://localhost:4000/uploads/" + link}
+                src={"https://kairbnb-clone-api.vercel.app/uploads/" + link}
                 alt=""
               />
               <button onClick={e => removePhoto(e, link)} className="absolute cursor-pointer bottom-0 right-0 bg-black text-white bg-opacity-50 rounded-xl py-2 px-3 m-1">

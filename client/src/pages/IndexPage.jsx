@@ -16,11 +16,11 @@ function IndexPage() {
   const [isSave, setIsSave] = useState(false);
 
   useEffect(() => {
-    axios.get("/places").then((response) => {
+    axios.get("/api/places").then((response) => {
       setPlaces(response.data);
     });
     if (user) {
-      axios.get("/bookmarks").then((res) => {
+      axios.get("/api/bookmarks").then((res) => {
         if (res.data) {
           setBoardList(res.data.board);
           let placeList = [];
@@ -72,20 +72,20 @@ function IndexPage() {
         }
         setboardPlace(newBoard);
         // console.log("axios.put ", { tempBoardName, newBoard });
-        await axios.put("/bookmarks", {boardName: tempBoardName, boardPlace: newBoard });
+        await axios.put("/api/bookmarks", {boardName: tempBoardName, boardPlace: newBoard });
         //found board with name
         // if (boardList) {
         //   //update
-        //   // await axios.put("/bookmark", {
+        //   // await axios.put("/api/bookmark", {
         //   //   boardName,
         //   //   ...boardPlace
         //   // });
         // } else {
         //   // new Wishish
-        //   axios.post("/bookmark", board);
+        //   axios.post("/api/bookmark", board);
         // }
       } else {
-        // axios.post('/bookmark')
+        axios.post('/api/bookmark')
         console.log("not found");
       }
 

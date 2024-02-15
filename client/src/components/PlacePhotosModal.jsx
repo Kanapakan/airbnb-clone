@@ -31,10 +31,10 @@ export default function PlacePhotosModal({ showAllPhotos, onChange, item }) {
             {/*body*/}
             {item?.photos?.length > 0 &&
               item.photos.map((photo) => (
-                <div key={photo} className="flex h-96 relative justify-self-center">
+                <div key={photo} className="flex  relative justify-self-center ">
                   <img
-                    className="aspect-[6/3] object-cover px-20"
-                    src={`http://localhost:4000/uploads/${photo}`}
+                    className=" w-full h-auto min-w-sm px-20 max-h-96"
+                    src={`https://kairbnb-clone-api.vercel.app/uploads/${photo}`}
                     alt=""
                   />
                 </div>

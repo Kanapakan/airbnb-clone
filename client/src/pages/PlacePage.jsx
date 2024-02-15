@@ -16,7 +16,7 @@ function PlacePage() {
     if (!id) {
       return;
     }
-    axios.get(`/places/${id}`).then((response) => {
+    axios.get(`/api/places/${id}`).then((response) => {
       setPlace(response.data);
     });
   }, [id]);
@@ -29,9 +29,11 @@ function PlacePage() {
       {clientWidth >= 768 && (
         <>
           <h1 className="pt-8 text-2xl">{place.title}</h1>
-          <p className="my-2 mb-6">
-           <AddressLink>{place.address}</AddressLink>
-          </p>
+          <div className="flex gap-2 mt-2 items-center">
+            <p className="mb-4">
+              <AddressLink>{place.address}</AddressLink>
+            </p>
+          </div>
         </>
       )}
       <PlaceGallery place={place}/>

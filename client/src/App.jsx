@@ -14,7 +14,7 @@ import BookingsPage from "./pages/BookingsPage";
 import BookingPage from "./pages/BookingPage";
 import WindowContextProvider from "./windowContext";
 
-axios.defaults.baseURL = "http://localhost:4000";
+axios.defaults.baseURL = "https://kairbnb-clone-api.vercel.app";
 axios.defaults.withCredentials = true;
 
 function App() {
